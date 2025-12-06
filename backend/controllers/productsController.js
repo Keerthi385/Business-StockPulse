@@ -34,7 +34,7 @@ export const createProduct = async (req, res) => {
     if (product) {
       product.quantity += 1;
       const savedProduct = await product.save();
-      return res.status(201).json(savedProduct);
+      return res.status(201).json({message: "Product created successfully!",savedProduct});
     } else {
       const product = new Product({
         productName,

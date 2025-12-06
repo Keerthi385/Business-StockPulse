@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
-export const authMiddleware = (req, res, next) => {
+export const agentAuthMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).json({ message: "Token is required!" });
@@ -11,7 +11,7 @@ export const authMiddleware = (req, res, next) => {
   try {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.vendor = decoded;
+    req.agent = decoded;
     next();
   } catch (error) {
     console.log("Auth error:", error);

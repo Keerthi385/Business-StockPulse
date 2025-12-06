@@ -23,7 +23,7 @@ const ProductsPage = () => {
           toast.error("Failed to load!");
         }
       } catch (error) {
-        toast.error("server issue");
+        toast.error("server issue",error);
       }
     };
 
@@ -32,14 +32,14 @@ const ProductsPage = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.delete(`http://localhost:8000/products/${id}`, {
+       await axios.delete(`http://localhost:8000/products/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const updatedProducts = products.filter((product) => product._id != id);
       setProducts(updatedProducts);
-      toast.success(res.data.message);
+      toast.success("Product Deleted!");
     } catch (error) {
       toast.error(error.response?.data?.message || "Server Issue");
     }

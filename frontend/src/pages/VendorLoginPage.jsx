@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
-const LoginPage = () => {
+const VendorLoginPage = () => {
 
   const [loginInfo, setLoginInfo] = useState({
     email: "",
@@ -24,7 +24,7 @@ const LoginPage = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/auth/login",loginInfo);
+      const res = await axios.post("http://localhost:8000/vendorAuth/login",loginInfo);
       if(res.status === 200){
         localStorage.setItem("token", res.data.token);
         toast.success(res.data.message);
@@ -69,4 +69,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default VendorLoginPage;

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-
-const SignupPage = () => {
+import { useNavigate } from "react-router";
+const VendorSignupPage = () => {
   const [signupInfo, setSignupInfo] = useState({
     name: "",
     shopName: "",
@@ -19,13 +19,14 @@ const SignupPage = () => {
       [name]: value,
     }));
   };
-
+        const navigate = useNavigate();
   const handleSubmit = async(e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/auth/signup",signupInfo);
+      const res = await axios.post("http://localhost:8000/vendorAuth/signup",signupInfo);
       if(res.status === 201){
         toast.success(res.data.message);
+        navigate('./vendor-login');
       } else{
         toast.error(res.data.message);
       }
@@ -96,4 +97,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default VendorSignupPage;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 
@@ -25,12 +25,12 @@ const CreateProductPage = () => {
 
   const handleCreate = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/products", product,{
+       await axios.post("http://localhost:8000/products", product,{
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      toast.success(res.data.message);
+      toast.success("Product Created!");
       navigate("/products");
     } catch (error) {
       toast.error(error.response?.data?.message || "Server Issue");

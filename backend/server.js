@@ -1,7 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import productsRoute from "./routes/productsRoute.js";
-import authRoutes from "./routes/authRoutes.js"
+import vendorAuthRoutes from "./routes/vendorAuthRoutes.js"
+import agentAuthRoutes from "./routes/agentAuthRoutes.js"
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 
@@ -11,8 +12,10 @@ const app = express();
 app.use(express.json());
 app.use(cors()); // add specific method to give access
 
-app.use("/auth", authRoutes);
+app.use("/vendorAuth", vendorAuthRoutes);
+app.use("/agentAuth", agentAuthRoutes);
 app.use("/products", productsRoute);
+
 
 
 const PORT = process.env.PORT || 8000;
@@ -21,6 +24,5 @@ connectDB().then(() => {
   app.listen(PORT, () => {
     console.log("Server is running at the PORT", PORT);
   })
-}
-  
+}  
 );

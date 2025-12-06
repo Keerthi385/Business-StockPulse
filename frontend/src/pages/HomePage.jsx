@@ -1,14 +1,15 @@
-import { useNavigate } from "react-router";
+import {Link} from 'react-router'
 
 const HomePage = () => {
 
-  const navigate = useNavigate();
 
   return (
     <div >
-      <h1>About our website</h1>
-      <button className="mr-4" onClick={() => navigate("/login")}>Login</button>
-      <button onClick={() => navigate("/signup")}>Signup</button>
+     <h1>Welcome to Business Agent</h1>
+        <p>Created By Team : Sankalp</p>
+        <h2>Identify yourself</h2>
+        <Link to = {'/agent'}>Agent</Link>
+        <Link to = {'/vendor'}>Vendor</Link>
     </div>
   );
 };
