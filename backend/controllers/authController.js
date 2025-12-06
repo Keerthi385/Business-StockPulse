@@ -7,7 +7,7 @@ export const signup = async (req, res) => {
     const { name, shopName, email, password, phone, address } = req.body;
     const vendorExists = await Vendor.findOne({ email });
     if (vendorExists) {
-      return res.status(400).json("Email already exists!");
+      return res.status(400).json({message: "Email already exists!"});
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,9 +33,11 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    //console.log("LOGIN BODY:", req.body);
+
     const vendor = await Vendor.findOne({ email });
     if (!vendor) {
-      return res.status(400).json({ message: "Vendor does not exists!" });
+      return res.status(404).json({ message: "Vendor does not exists!" });
     }
     const isMatch = await bcrypt.compare(password, vendor.password);
     if (!isMatch) {

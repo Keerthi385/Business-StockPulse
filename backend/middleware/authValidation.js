@@ -4,7 +4,7 @@ export const signupValidation = (req, res, next) => {
   const schema = Joi.object({
     name: Joi.string().min(3).max(100).required(),
     shopName: Joi.string().min(3).max(100).required(),
-    email: Joi.email().required(),
+    email: Joi.string().email().required(),
     password: Joi.string().min(3).max(100).required(),
     phone: Joi.string().min(10).max(13).required(),
     address: Joi.string().min(3).max(100).required(),

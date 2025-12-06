@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // add specific method to give access
 
 app.use("/auth", authRoutes);
 app.use("/products", productsRoute);

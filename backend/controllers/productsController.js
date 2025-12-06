@@ -10,6 +10,20 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+export const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findOne({
+      _id: req.params.id,
+      vendor: req.vendor.vendorId,
+    });
+    if (!product) return res.status(404).json({ message: "Product not found!" });
+    res.status(200).json(product);
+  } catch (error) {
+    console.log("Error in getProductById!", error);
+    res.status(500).json({ message: "Internal Server Error!" });
+  }
+};
+
 export const createProduct = async (req, res) => {
   try {
     const { productName, price, supplier } = req.body;
@@ -45,7 +59,7 @@ export const updateProduct = async (req, res) => {
       { _id: req.params.id, vendor: req.vendor.vendorId },
       { productName, quantity, price, supplier }
     );
-    if (!product) res.status(404).json({ message: "Product not found!" });
+    if (!product) return res.status(404).json({ message: "Product not found!" });
     res.status(200).json({message: "Product updated successfully!"});
   } catch (error) {
     console.log("Error in updateProduct!", error);
@@ -59,7 +73,7 @@ export const deleteProduct = async (req, res) => {
       _id: req.params.id,
       vendor: req.vendor.vendorId,
     });
-    if (!product) res.status(404).json({ message: "Product not found!" });
+    if (!product) return res.status(404).json({ message: "Product not found!" });
     res.status(200).json("Product deleted successfully!");
   } catch (error) {
     console.log("Error in deleteProduct!", error);
