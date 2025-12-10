@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import socket from "../socket.js";
 
 const VendorLoginPage = () => {
 
@@ -26,7 +27,10 @@ const VendorLoginPage = () => {
     try {
       const res = await axios.post("http://localhost:8000/vendorAuth/login",loginInfo);
       if(res.status === 200){
-        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("vendorToken", res.data.token);
+
+        socket.emit("join_vendor", res.data.vendor._id);
+        
         toast.success(res.data.message);
         navigate("/products");
       } else{

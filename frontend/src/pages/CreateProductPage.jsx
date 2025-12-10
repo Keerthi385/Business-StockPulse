@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 
@@ -21,11 +21,11 @@ const CreateProductPage = () => {
     }));
   };
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("vendorToken");
 
   const handleCreate = async () => {
     try {
-       await axios.post("http://localhost:8000/products", product,{
+      await axios.post("http://localhost:8000/products", product, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

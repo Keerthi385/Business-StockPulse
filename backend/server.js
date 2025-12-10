@@ -3,7 +3,10 @@ import dotenv from "dotenv";
 import productsRoute from "./routes/productsRoute.js";
 import vendorAuthRoutes from "./routes/vendorAuthRoutes.js"
 import agentAuthRoutes from "./routes/agentAuthRoutes.js"
+import orderRoutes from "./routes/orderRoutes.js"
 import cors from "cors";
+import http from "http";
+import { initSocket } from "./sockets/socket.js";
 import { connectDB } from "./config/db.js";
 
 dotenv.config();
@@ -15,13 +18,18 @@ app.use(cors()); // add specific method to give access
 app.use("/vendorAuth", vendorAuthRoutes);
 app.use("/agentAuth", agentAuthRoutes);
 app.use("/products", productsRoute);
+app.use("/orders", orderRoutes);
 
 
 
 const PORT = process.env.PORT || 8000;
 
+const server = http.createServer(app);
+
+initSocket(server);
+
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log("Server is running at the PORT", PORT);
   })
 }  

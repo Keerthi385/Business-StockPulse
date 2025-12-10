@@ -2,7 +2,8 @@ import React from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-
+import socket from "../socket.js"; 
+import { useNavigate } from "react-router";
 
 const AgentLoginPage = () => {
 
@@ -11,7 +12,7 @@ const AgentLoginPage = () => {
     password: ""
   });
 
-
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -26,8 +27,12 @@ const AgentLoginPage = () => {
     try {
       const res = await axios.post("http://localhost:8000/agentAuth/login",loginInfo);
       if(res.status === 200){
-        localStorage.setItem("token", res.data.token);
-        toast.success(res.data.message)
+        localStorage.setItem("agentToken", res.data.token);
+
+        socket.emit("join_agent", res.data.agent._id);
+
+        toast.success(res.data.message);
+        navigate("/agent-orders");
       } else{
         toast.error(res.data.message);
       }
@@ -37,8 +42,6 @@ const AgentLoginPage = () => {
       console.log(error);
     }
   }
-
-
 
   return (
     <div>

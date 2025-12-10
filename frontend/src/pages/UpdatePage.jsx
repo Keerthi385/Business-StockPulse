@@ -23,7 +23,7 @@ const UpdatePage = () => {
     }))
   }
   
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("vendorToken");
 
   const handleUpdate = async() => {
     try {

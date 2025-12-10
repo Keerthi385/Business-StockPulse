@@ -19,15 +19,18 @@ const VendorSignupPage = () => {
       [name]: value,
     }));
   };
-        const navigate = useNavigate();
-  const handleSubmit = async(e) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/vendorAuth/signup",signupInfo);
-      if(res.status === 201){
+      const res = await axios.post(
+        "http://localhost:8000/vendorAuth/signup",
+        signupInfo
+      );
+      if (res.status === 201) {
         toast.success(res.data.message);
-        navigate('./vendor-login');
-      } else{
+        navigate("./vendor-login");
+      } else {
         toast.error(res.data.message);
       }
     } catch (error) {
@@ -35,7 +38,7 @@ const VendorSignupPage = () => {
 
       console.log(error);
     }
-  }
+  };
 
   return (
     <div>
