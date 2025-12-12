@@ -4,20 +4,35 @@ import jwt from "jsonwebtoken";
 
 export const signup = async (req, res) => {
   try {
-    const { name, shopName, email, password, phone, address } = req.body;
-    const vendorExists = await Vendor.findOne({ email });
+    const { vendorName, vendorShopName, vendorDOB, vendorEmail, vendorPassword, vendorPhoneNo, vendorAddress } = req.body;
+    const vendorExists = await Vendor.findOne({ vendorEmail });
     if (vendorExists) {
       return res.status(400).json({message: "Email already exists!"});
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const generateVendorID = () => {
+      const date = new Date(vendorDOB);
+      const yy = date.getFullYear().toString().slice(-2);
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+
+      const random = Math.floor(100 + Math.random() * 900);
+
+      return `VEN-${yy}${mm}${dd}-${random}`;
+    };
+
+    const vendorID = generateVendorID()
+
+    const hashedPassword = await bcrypt.hash(vendorPassword, 10);
     const vendor = new Vendor({
-      name,
-      shopName,
-      email,
-      password: hashedPassword,
-      phone,
-      address,
+      vendorName,
+      vendorID,
+      vendorShopName,
+      vendorDOB,
+      vendorEmail,
+      vendorPassword: hashedPassword,
+      vendorPhoneNo,
+      vendorAddress,
     });
 
     const savedVendor = await vendor.save();
@@ -32,14 +47,13 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    //console.log("LOGIN BODY:", req.body);
+    const { vendorEmail, vendorPassword } = req.body;
 
-    const vendor = await Vendor.findOne({ email });
+    const vendor = await Vendor.findOne({ vendorEmail });
     if (!vendor) {
       return res.status(404).json({ message: "Vendor does not exists!" });
     }
-    const isMatch = await bcrypt.compare(password, vendor.password);
+    const isMatch = await bcrypt.compare(vendorPassword, vendor.vendorPassword);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }

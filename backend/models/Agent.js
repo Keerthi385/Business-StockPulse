@@ -7,24 +7,32 @@ const agentSchema = new mongoose.Schema(
             type : String,
             required : true
         },
+        agentID: {
+            type: String,
+            required: true
+        },
         agencyName : {
             type : String,
             required : true
         },
-        email : {
+        agentDOB: {
+            type: Date,
+            required: true
+        },
+        agentEmail : {
             type : String,
             required : true,
             unique : true
         },
-        password : {
+        agentPassword : {
             type : String,
             required : true
         },
-        phoneNo : {
+        agentPhoneNo : {
             type : String,
             required : true
         },
-        address : {
+        agentAddress : {
             type : String,
             required : true
         }

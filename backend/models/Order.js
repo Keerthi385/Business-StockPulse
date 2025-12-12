@@ -17,9 +17,9 @@ const orderSchema = new mongoose.Schema(
       ref: "Vendor",
       required: true,
     },
-    agentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Agent",
+    agentID: {
+      type: String,
+      required: true
     },
     status: {
       type: String,

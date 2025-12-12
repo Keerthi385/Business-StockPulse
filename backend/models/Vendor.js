@@ -2,29 +2,37 @@ import mongoose from "mongoose";
 
 const vendorSchema = new mongoose.Schema(
   {
-    name: {
+    vendorName: {
       type: String,
       required: true,
     },
-    shopName: {
+    vendorID: {
+      type:String,
+      
+    },
+    vendorShopName: {
       type: String,
       required: true,
     },
-    email: {
+    vendorDOB: {
+      type: Date,
+      required: true
+    },
+    vendorEmail: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
     },
-    password: {
+    vendorPassword: {   
       type: String,
       required: true,
     },
-    phone: {
+    vendorPhoneNo: {
       type: String,
       required: true,
     },
-    address: {
+    vendorAddress: {
       type: String,
       required: true,
     },

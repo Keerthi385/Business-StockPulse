@@ -4,6 +4,7 @@ import productsRoute from "./routes/productsRoute.js";
 import vendorAuthRoutes from "./routes/vendorAuthRoutes.js"
 import agentAuthRoutes from "./routes/agentAuthRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js"
+import vendorAgentConnectionRoutes from "./routes/vendorAgentConnectionRoutes.js"
 import cors from "cors";
 import http from "http";
 import { initSocket } from "./sockets/socket.js";
@@ -19,6 +20,7 @@ app.use("/vendorAuth", vendorAuthRoutes);
 app.use("/agentAuth", agentAuthRoutes);
 app.use("/products", productsRoute);
 app.use("/orders", orderRoutes);
+app.use("/connections", vendorAgentConnectionRoutes);
 
 
 

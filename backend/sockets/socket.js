@@ -18,7 +18,6 @@ export const initSocket = (server) => {
     });
 
     socket.on("join_agent", (agentId) => {
-      socket.join("agents");
       socket.join(`agent_${agentId}`);
       console.log(`Agent joined rooms: agents, agent_${agentId}`);
     });

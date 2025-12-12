@@ -9,10 +9,15 @@ import VendorSignupPage from "./pages/VendorSignupPage";
 import AgentLoginPage from "./pages/AgentLoginPage";
 import AgentSignupPage from "./pages/AgentSignupPage";
 import AgentOrdersPage from "./pages/AgentOrdersPage";
-import AvailableOrdersPage from "./pages/AvailableOrdersPage";
 import UpdatePage from "./pages/UpdatePage";
 import VendorOrdersPage from "./pages/VendorOrdersPage";
 import "./App.css";
+import FindConnectionsPage from "./pages/FindConnectionsPage";
+import VendorConnectionsPage from "./pages/VendorConnectionsPage";
+import  {Analysis}  from "./pages/Analysis";
+import OrderForm from "./pages/OrderForm";
+import ConnectionRequestsPage from "./pages/ConnectionRequestsPage";
+import AgentConnectionsPage from "./pages/AgentConnectionsPage";
 
 function App() {
   return (
@@ -29,10 +34,13 @@ function App() {
         <Route path="/create" element={<CreateProductPage />} />
         <Route path="/products/:id" element={<UpdatePage />} />
         <Route path="/vendor-orders" element={<VendorOrdersPage/>}/>
-        <Route path="/agent-orders" element={<AvailableOrdersPage/>}/>
-        <Route path="/agent-my-orders" element={<AgentOrdersPage/>}/>
-
-        
+        <Route path="/agent-orders" element={<AgentOrdersPage/>}/>
+        <Route path="/find-connections" element={<FindConnectionsPage/>}/>
+        <Route path="/vendor-connections" element={<VendorConnectionsPage/>}/>
+        <Route path="/analysis" element={<Analysis/>}></Route>
+        <Route path="/orderForm/:productId/:productName" element={<OrderForm/>}/>
+        <Route path="/connection-requests" element={<ConnectionRequestsPage/>}/>
+        <Route path="/myVendors" element={<AgentConnectionsPage/>}/>
       </Routes>
     </div>
   );

@@ -4,10 +4,11 @@ export const signupValidation = (req, res, next) => {
   const schema = Joi.object({
     agentName: Joi.string().min(3).max(100).required(),
     agencyName: Joi.string().min(3).max(100).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().min(3).max(100).required(),
-    phoneNo: Joi.string().min(10).max(13).required(),
-    address: Joi.string().min(3).max(100).required(),
+    agentDOB: Joi.date().iso().required(),
+    agentEmail: Joi.string().email().required(),
+    agentPassword: Joi.string().min(3).max(100).required(),
+    agentPhoneNo: Joi.string().min(10).max(13).required(),
+    agentAddress: Joi.string().min(3).max(100).required(),
   });
   const { error } = schema.validate(req.body);
   if (error) return res.status(400).json({ message: "Bad request", error });
@@ -16,8 +17,8 @@ export const signupValidation = (req, res, next) => {
 
 export const loginValidation = (req, res, next) => {
   const schema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().min(3).max(100).required(),
+    agentEmail: Joi.string().email().required(),
+    agentPassword: Joi.string().min(3).max(100).required(),
   });
   const { error } = schema.validate(req.body);
   if (error) return res.status(400).json({ message: "Bad request", error });

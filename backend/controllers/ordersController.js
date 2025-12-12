@@ -1,9 +1,20 @@
+import Agent from "../models/Agent.js";
+import Connection from "../models/Connection.js";
 import Order from "../models/Order.js";
+import Vendor from "../models/Vendor.js";
 import { getIO } from "../sockets/socket.js";
 
 export const createOrder = async (req, res) => {
   try {
-    const { productId, orderQuantity } = req.body;
+    const { productId, agentID, orderQuantity } = req.body;
+    const vendor = await Vendor.findById(req.vendor.vendorId);
+
+    const agentPresentInConnections = await Connection.findOne({vendorID: vendor.vendorID});
+
+    if(!agentPresentInConnections){
+      return res.status(404).json({message: "Agent does not exists in your connections!"});
+    }
+
     const orderExists = await Order.findOne({
       productId,
       vendorId: req.vendor.vendorId,
@@ -18,14 +29,14 @@ export const createOrder = async (req, res) => {
       productId,
       orderQuantity,
       vendorId,
+      agentID,
       status: "pending",
     });
     let savedOrder = await order.save();
 
     savedOrder = await savedOrder.populate("productId", "productName");
-    savedOrder = await savedOrder.populate("vendorId", "name");
+    savedOrder = await savedOrder.populate("vendorId", "vendorName");
 
-    getIO().to("agents").emit("new_order", savedOrder);
 
     return res
       .status(201)
@@ -41,8 +52,8 @@ export const viewVendorOrders = async (req, res) => {
     const vendorId = req.vendor.vendorId;
     const orders = await Order.find({ vendorId })
       .populate("productId", "productName")
-      .populate("agentId", "agentName")
-      .populate("vendorId", "name");
+      .populate("agentID", "agentName")
+      .populate("vendorId", "vendorName");
     return res.status(200).json(orders);
   } catch (error) {
     console.log("Error in viewVendorOrders", error);
@@ -50,43 +61,12 @@ export const viewVendorOrders = async (req, res) => {
   }
 };
 
-export const acceptOrder = async (req, res) => {
-  try {
-    const order = await Order.findOneAndUpdate(
-      { _id: req.params.id, status: "pending" },
-      { status: "accepted", agentId: req.agent.agentId },
-      { new: true }
-    );
-
-    if (!order) {
-      return res
-        .status(404)
-        .json({ message: "Order not found or already accepted" });
-    }
-
-    const populated = await Order.findById(order._id)
-      .populate("productId", "productName")
-      .populate("vendorId", "name")
-      .populate("agentId", "agentName");
-
-    getIO().to("agents").emit("order_removed", order._id);
-    getIO().to(`agent_${populated.agentId._id}`).emit("new_order", populated);
-    getIO()
-      .to(`vendor_${populated.vendorId._id}`)
-      .emit("order_accepted", populated);
-
-    res.status(200).json(populated);
-  } catch (error) {
-    console.log("Error in acceptOrder", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-
 export const viewAgentOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ agentId: req.agent.agentId })
+    const agent = await Agent.findById(req.agent.agentId)
+    const orders = await Order.find({ agentID: agent.agentID})
       .populate("productId", "productName")
-      .populate("vendorId", "name");
+      .populate("vendorId", "vendorName");
     return res.status(200).json(orders);
   } catch (error) {
     console.log("Error in viewAgentOrders", error);
@@ -96,10 +76,11 @@ export const viewAgentOrders = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { id, status } = req.params;
+    const agent = await Agent.findById(req.agent.agentId)
 
     const order = await Order.findOneAndUpdate(
-      { _id: req.params.id, agentId: req.agent.agentId },
+      { _id: id, agentID: agent.agentID },
       { status },
       { new: true }
     );
@@ -108,15 +89,9 @@ export const updateOrderStatus = async (req, res) => {
 
     const populated = await Order.findById(order._id)
       .populate("productId", "productName")
-      .populate("vendorId", "name");
+      .populate("vendorId", "vendorName");
 
-    getIO()
-      .to(`vendor_${populated.vendorId._id}`)
-      .emit("order_status_updated", populated);
-
-    getIO()
-      .to(`agent_${populated.agentId._id}`)
-      .emit("order_status_updated", populated);
+    
 
     res.json(populated);
   } catch (error) {
@@ -125,15 +100,4 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-export const getAvailableOrders = async (req, res) => {
-  try {
-    const orders = await Order.find({ status: "pending" })
-      .populate("productId", "productName")
-      .populate("vendorId", "name");
 
-    return res.status(200).json(orders);
-  } catch (error) {
-    console.log("Error in getAvailableOrders", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
