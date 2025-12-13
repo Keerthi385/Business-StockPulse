@@ -18,6 +18,7 @@ import  {Analysis}  from "./pages/Analysis";
 import OrderForm from "./pages/OrderForm";
 import ConnectionRequestsPage from "./pages/ConnectionRequestsPage";
 import AgentConnectionsPage from "./pages/AgentConnectionsPage";
+import Chatbot from "./pages/Chatbot";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/orderForm/:productId/:productName" element={<OrderForm/>}/>
         <Route path="/connection-requests" element={<ConnectionRequestsPage/>}/>
         <Route path="/myVendors" element={<AgentConnectionsPage/>}/>
+        <Route path="/chatbot" element={<Chatbot/>}/>
       </Routes>
     </div>
   );

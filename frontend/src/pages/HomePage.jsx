@@ -33,7 +33,7 @@ const HomePage = () => {
             <FaStore className="text-purple-600 text-4xl" />
           </div>
 
-          <h2 className="text-3xl font-semibold text-center mb-2">Vendor Login</h2>
+          <h2 className="text-3xl font-semibold text-center mb-2">Vendor</h2>
           <p className="text-gray-600 text-center mb-2">
             Manage your inventory and orders
           </p>
@@ -59,7 +59,7 @@ const HomePage = () => {
             <FaUserTie className="text-blue-600 text-4xl" />
           </div>
 
-          <h2 className="text-3xl font-semibold text-center mb-2">Agent Login</h2>
+          <h2 className="text-3xl font-semibold text-center mb-2">Agent</h2>
           <p className="text-gray-600 text-center mb-2">
             Process and fulfill vendor orders
           </p>

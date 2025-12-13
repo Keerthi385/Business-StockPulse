@@ -9,9 +9,14 @@ import cors from "cors";
 import http from "http";
 import { initSocket } from "./sockets/socket.js";
 import { connectDB } from "./config/db.js";
+import chatbotRouter from "./chatbot.js";
 
 dotenv.config();
 const app = express();
+
+
+const router = express.Router();
+
 
 app.use(express.json());
 app.use(cors()); // add specific method to give access
@@ -21,6 +26,7 @@ app.use("/agentAuth", agentAuthRoutes);
 app.use("/products", productsRoute);
 app.use("/orders", orderRoutes);
 app.use("/connections", vendorAgentConnectionRoutes);
+app.use("/api/chatbot", chatbotRouter);
 
 
 

@@ -9,7 +9,7 @@ export const createOrder = async (req, res) => {
     const { productId, agentID, orderQuantity } = req.body;
     const vendor = await Vendor.findById(req.vendor.vendorId);
 
-    const agentPresentInConnections = await Connection.findOne({vendorID: vendor.vendorID});
+    const agentPresentInConnections = await Connection.findOne({vendorID: vendor.vendorID,agentID});
 
     if(!agentPresentInConnections){
       return res.status(404).json({message: "Agent does not exists in your connections!"});
@@ -25,11 +25,13 @@ export const createOrder = async (req, res) => {
         .json({ message: "Pending order for this product already exists!" });
     }
     const vendorId = req.vendor.vendorId;
+    const agent = await Agent.findOne({agentID});
     const order = new Order({
       productId,
       orderQuantity,
       vendorId,
       agentID,
+      agentName: agent.agentName,
       status: "pending",
     });
     let savedOrder = await order.save();
@@ -67,6 +69,7 @@ export const viewAgentOrders = async (req, res) => {
     const orders = await Order.find({ agentID: agent.agentID})
       .populate("productId", "productName")
       .populate("vendorId", "vendorName");
+    // console.log(JSON.stringify(orders, null, 2));
     return res.status(200).json(orders);
   } catch (error) {
     console.log("Error in viewAgentOrders", error);
@@ -99,5 +102,29 @@ export const updateOrderStatus = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const findOrderByProductId = async(req,res) => {
+  try {
+    const order = await Order.findOne({productId: req.params.id});
+    if(order){
+      return res.status(400).json({message: "Please cancel the order before deleting!"});
+    } 
+    return res.status(200).json({message: "No order placed for that product!"});
+    
+  } catch (error) {
+    console.log("Error in findOrderByProductId", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+export const deleteOrder = async(req,res) => {
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    return res.status(200).json({message: "Order deleted successfully!"});
+  } catch (error) {
+    console.log("Error in deleteOrder", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 
 

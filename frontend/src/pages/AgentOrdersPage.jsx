@@ -31,8 +31,8 @@ const AgentOrdersPage = () => {
     try {
       const token = localStorage.getItem("agentToken");
       const res = await axios.put(
-        `http://localhost:8000/orders/status/${orderId}`,
-        { status },
+        `http://localhost:8000/orders/${orderId}/${status}`,
+        {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -48,11 +48,18 @@ const AgentOrdersPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-blue-900 p-6">
-      
       {/* Header */}
+      <h1 className="text-center text-blue-200 text-lg font-semibold tracking-wide mb-6 drop-shadow">
+        My ID:{" "}
+        <span className="text-white font-bold bg-blue-800/60 px-3 py-1 rounded-lg ml-2">
+          {orders[0]?.agentID}
+        </span>
+      </h1>
       <div className="text-center mb-10">
         <FaClipboardList className="text-blue-200 text-6xl mx-auto mb-4 drop-shadow-lg" />
-        <h1 className="text-5xl font-bold text-white drop-shadow-md">My Orders</h1>
+        <h1 className="text-5xl font-bold text-white drop-shadow-md">
+          My Orders
+        </h1>
 
         <Link
           to="/connection-requests"
@@ -80,20 +87,24 @@ const AgentOrdersPage = () => {
               <FaBoxOpen className="text-blue-600 text-3xl" />
               <div>
                 <h2 className="text-2xl font-semibold text-gray-800">
-                  {order.productId?.productName}
+                  {order.productId?.productName || "Product Unavailable"}
                 </h2>
                 <p className="text-gray-600">
-                  Vendor: <span className="font-semibold">{order.vendorId?.vendorName}</span>
+                  Vendor:{" "}
+                  <span className="font-semibold">
+                    {order.vendorId?.vendorName}
+                  </span>
                 </p>
                 <p className="text-gray-700">
-                  Quantity: <span className="font-semibold">{order.orderQuantity}</span>
+                  Quantity:{" "}
+                  <span className="font-semibold">{order.orderQuantity}</span>
                 </p>
               </div>
             </div>
 
             {/* Status Buttons */}
             <div className="mt-4">
-              {order.status === "Pending" && (
+              {order.status === "pending" && (
                 <button
                   onClick={() => updateStatus(order._id, "placed")}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-xl shadow-lg transition"

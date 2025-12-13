@@ -2,12 +2,12 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router";
-import OrderForm from "./OrderForm";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [orderPlaced, setOrderPlaced] = useState({});
-  const [orderQuantities, setOrderQuantities] = useState({});
+  const [orderQuantity, setOrderQuantity] = useState({});
+  const [sellQty, setSellQty] = useState({});
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -51,6 +51,16 @@ const ProductsPage = () => {
 
   const handleDelete = async (id) => {
     try {
+      const token = localStorage.getItem("vendorToken");
+      const res = await axios.get(`http://localhost:8000/orders/${id}`,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if(res.status === 400) {
+        toast.error(res.data.message);
+        return;
+      }
       await axios.delete(`http://localhost:8000/products/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -58,7 +68,7 @@ const ProductsPage = () => {
       setProducts(products.filter((product) => product._id !== id));
       toast.success("Product Deleted!");
     } catch (error) {
-      toast.error("Server Issue");
+      toast.error("Cannot delete product!");
     }
   };
 
@@ -69,24 +79,51 @@ const ProductsPage = () => {
     }));
   };
 
-  // const handleOrder = async (id, orderQuantity) => {
-  //   try {
-  //     const res = await axios.post(
-  //       "http://localhost:8000/orders/",
-  //       { productId: id, orderQuantity },
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
+  const handleSell = async (
+    productId,
+    productName,
+    currentQty,
+    price,
+    supplier
+  ) => {
+    const qtyToSell = sellQty[productId] || 1;
 
-  //     if (res.status === 201) {
-  //       setOrderPlaced((prev) => ({ ...prev, [id]: true }));
-  //       toast.success(res.data.message);
-  //     } else {
-  //       toast.error(res.data.message);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Server Issue");
-  //   }
-  // };
+    if (qtyToSell > currentQty) {
+      toast.error("Not enough stock!");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("vendorToken");
+
+      const updatedQty = currentQty - qtyToSell;
+
+      const res = await axios.put(
+        `http://localhost:8000/products/${productId}`,
+        {
+          productName,
+          quantity: updatedQty,
+          price,
+          supplier,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const updatedProduct = res.data.product;
+
+        setProducts((prev) =>
+          prev.map((p) => (p._id === productId ? updatedProduct : p))
+        );
+
+
+      toast.success(`Sold ${qtyToSell} item(s)!`);
+    } catch (error) {
+      console.error("Sell error:", error);
+      toast.error("Error selling product");
+    }
+  };
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-r from-purple-600 to-purple-900 flex flex-col items-center">
@@ -114,6 +151,12 @@ const ProductsPage = () => {
             className="bg-white/90 hover:bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow-md transition"
           >
             Find Connections
+          </Link>
+          <Link
+            to="/chatbot"
+            className="bg-white/90 hover:bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow-md transition"
+          >
+            Chatbot
           </Link>
           <Link
             to="/analysis"
@@ -162,7 +205,54 @@ const ProductsPage = () => {
               </button>
             </div>
 
+            <div className="mt-4 flex flex-col items-center gap-2 p-3 bg-purple-100 rounded-xl">
+              <div className="flex gap-3 items-center">
+                <div className="mt-4 flex flex-col items-center gap-2 p-3 bg-purple-100 rounded-xl">
+                  <div className="flex gap-3 items-center">
+                    {/* Quantity Dropdown */}
+                    <select
+                      value={sellQty[product._id] || 1}
+                      onChange={(e) =>
+                        setSellQty((prev) => ({
+                          ...prev,
+                          [product._id]: Number(e.target.value),
+                        }))
+                      }
+                      className="px-3 py-2 rounded-lg border border-purple-300 focus:outline-none"
+                    >
+                      {Array.from(
+                        { length: product.quantity },
+                        (_, i) => i + 1
+                      ).map((qty) => (
+                        <option key={qty} value={qty}>
+                          {qty}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Sell Button */}
+                    <button
+                      onClick={() =>
+                        handleSell(
+                          product._id,
+                          product.productName,
+                          product.quantity,
+                          product.price,
+                          product.supplier
+                        )
+                      }
+                      disabled={product.quantity === 0}
+                      className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition"
+                    >
+                      Sell
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* ORDER SECTION */}
+
             {product.quantity < 10 && !orderPlaced[product._id] && (
               <div className="mt-4 flex flex-col items-center gap-2 p-3 bg-purple-100 rounded-xl">
                 <div className="flex gap-3 items-center">
@@ -172,8 +262,6 @@ const ProductsPage = () => {
                   >
                     Order
                   </Link>
-
-                  
                 </div>
               </div>
             )}

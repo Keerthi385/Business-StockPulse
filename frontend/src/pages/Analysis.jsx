@@ -41,16 +41,14 @@ export function Analysis() {
     }, []);
 
     const totalRevenue = products.reduce((acc, p) =>
-        acc + (Number(p.sellingPrice) * Number(p.quantity)), 0
+        acc + (Number(p.price) * Number(p.quantity)), 0
     );
 
-    const sellingPrice = products.reduce((acc, p) =>
-        acc + Number(p.sellingPrice), 0
+    const price = products.reduce((acc, p) =>
+        acc + Number(p.price), 0
     );
 
-    const costPrice = products.reduce((acc, p) =>
-        acc + Number(p.costPrice), 0
-    );
+   
 
     return (
         <>
@@ -59,7 +57,7 @@ export function Analysis() {
                 <div className='chart-card'>
                     <Bar
                         data={{
-                            labels: ["5/12", "6/12", "7/12"],
+                            labels: ["11/12", "12/12", "13/12"],
                             datasets: [
                                 { label: "Revenue", data: [232, 456, totalRevenue] }
                             ],
@@ -82,14 +80,14 @@ export function Analysis() {
                             datasets: [
                                 {
                                     label: "Selling Price",
-                                    data: [256, 555, sellingPrice],
+                                    data: [256, 555, 546,58,859,price],
                                     borderWidth: 3,
                                     borderColor: "blue",
                                     backgroundColor: "rgba(31, 119, 180, 0.3)"
                                 },
                                 {
                                     label: "Cost Price",
-                                    data: [156, 664, costPrice],
+                                    data: [156, 664, 123,56,464,655],
                                     borderColor: "orange",
                                     backgroundColor: "rgba(255, 127, 14, 0.3)"
                                 }
