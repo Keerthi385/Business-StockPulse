@@ -1,5 +1,5 @@
 import express from "express"
-import { acceptConnectionRequest, rejectConnectionRequest,createConnectionRequest, viewConnectedAgents, viewConnectedVendors, findAgentByID, viewConnectionRequests } from "../controllers/vendorAgentConnectionController.js";
+import { acceptConnectionRequest, rejectConnectionRequest,createConnectionRequest, viewConnectedAgents, viewConnectedVendors, findAgentByID, viewConnectionRequests, deleteConnection } from "../controllers/vendorAgentConnectionController.js";
 import { vendorAuthMiddleware } from "../middleware/vendorAuthMiddleware.js";
 import { agentAuthMiddleware } from "../middleware/agentAuthMiddleware.js";
 
@@ -12,5 +12,6 @@ router.get("/connectedAgents",vendorAuthMiddleware, viewConnectedAgents);
 router.get("/connectedVendors",agentAuthMiddleware, viewConnectedVendors);
 router.get("/findAgentByID/:id", vendorAuthMiddleware, findAgentByID);
 router.get("/connectionRequests",agentAuthMiddleware, viewConnectionRequests);
+router.delete("/:connectionId",vendorAuthMiddleware, deleteConnection);
 
 export default router;

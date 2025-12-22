@@ -9,6 +9,7 @@ const OrderForm = () => {
 
   const [orderDetails, setOrderDetails] = useState({
     productId,
+    orderQuantity: 10,
   });
 
   const handleChange = (e) => {
@@ -79,7 +80,7 @@ const OrderForm = () => {
             </label>
             <input
               type="number"
-              value={10}
+              value={orderDetails.orderQuantity}
               name="orderQuantity"
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"

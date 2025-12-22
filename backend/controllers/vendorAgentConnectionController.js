@@ -100,7 +100,10 @@ export const rejectConnectionRequest = async(req,res) => {
     }
 
     connection.connectionStatus = "rejected";
+
     const updatedConnection = await connection.save();
+
+    //await Connection.findByIdAndDelete(connection._id);
 
     return res.status(200).json({
       message: "Connection request accepted successfully!",
@@ -127,7 +130,7 @@ export const viewConnectedAgents = async (req, res) => {
 export const viewConnectedVendors = async(req,res) => {
   try {
     const agent = await Agent.findById(req.agent.agentId);
-    const vendors = await Connection.find({ agentID: agent.agentID });
+    const vendors = await Connection.find({ agentID: agent.agentID, connectionStatus: "accepted" });
 
     return res.status(200).json(vendors);
   } catch (error) {
@@ -155,6 +158,18 @@ export const viewConnectionRequests = async(req,res) => {
     return res.status(200).json(requests);
   } catch (error) {
     console.log("Error in viewConnectionRequests", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export const deleteConnection = async(req, res) => {
+  try {
+    const connection = await Connection.findByIdAndDelete(req.params.connectionId);
+    if(!connection) return res.status(404).json({message: "Connection does not exist!"});
+
+    return res.status(200).json({message: "Connection deleted successfully!"});
+  } catch (error) {
+    console.log("Error in deleteConnection", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }

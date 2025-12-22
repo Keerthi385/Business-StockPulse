@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { TrashIcon } from "lucide-react";
 import { FaUsers } from "react-icons/fa";
 
 const VendorConnectionsPage = () => {
@@ -34,9 +35,34 @@ const VendorConnectionsPage = () => {
     fetchConnections();
   }, []);
 
+  const handleDeleteConnection = async (connectionId) => {
+    const token = localStorage.getItem("vendorToken");
+
+    try {
+      const res = await axios.delete(
+        `http://localhost:8000/connections/${connectionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.status === 200) {
+        setConnections((prev) =>
+          prev.filter((conn) => conn._id !== connectionId)
+        );
+        toast.success("Connection removed successfully");
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to remove connection"
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-900 via-purple-600 to-purple-900 p-8">
-
       {/* Header */}
       <div className="text-center mb-10">
         <FaUsers className="text-white text-6xl mx-auto mb-3" />
@@ -53,16 +79,37 @@ const VendorConnectionsPage = () => {
             {connections.map((connection, index) => (
               <div
                 key={index}
-                className="p-5 border rounded-xl bg-gray-50 hover:shadow-md transition"
+                className="relative p-5 border rounded-xl bg-gray-50 hover:shadow-md transition"
               >
-                <p className="text-gray-600">
-                  Agency: {connection.agentID}
-                </p>
+                {/* Delete Button (Top Right) */}
+                {connection.connectionStatus === "rejected" && (
+                  <button
+                    onClick={() => handleDeleteConnection(connection._id)}
+                    className="absolute top-4 right-4 text-red-500 hover:text-red-700
+                 bg-red-100 hover:bg-red-200
+                 p-2 rounded-full transition shadow-sm"
+                    title="Remove connection"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </button>
+                )}
+
+                {/* Connection Details */}
                 <p className="text-lg font-semibold text-gray-800">
-                  Agent: {connection.agentName}
+                  Agent ID: {connection.agentID}
                 </p>
+
+                <p className="text-gray-500 text-sm">
+                  Agent Name: {connection.agentName}
+                </p>
+
+                <p className="text-gray-600">Agency: {connection.agencyName}</p>
+
                 <p className="text-gray-600">
-                  Agency: {connection.agencyName}
+                  Status:{" "}
+                  <span className="font-semibold capitalize">
+                    {connection.connectionStatus}
+                  </span>
                 </p>
               </div>
             ))}
