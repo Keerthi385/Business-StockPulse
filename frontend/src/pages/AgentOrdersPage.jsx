@@ -3,9 +3,10 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router";
 import { FaBoxOpen, FaShippingFast, FaClipboardList } from "react-icons/fa";
+import { useAgent } from "../context/AgentContext";
 
 const AgentOrdersPage = () => {
-  const [orders, setOrders] = useState([]);
+  const { orders, setOrders } = useAgent();
 
   useEffect(() => {
     const token = localStorage.getItem("agentToken");
@@ -18,7 +19,12 @@ const AgentOrdersPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setOrders(res.data);
+        //setOrders(res.data);
+        setOrders((prev) => {
+          const map = new Map(prev.map((o) => [o._id, o]));
+          res.data.forEach((o) => map.set(o._id, o));
+          return Array.from(map.values());
+        });
       } catch (err) {
         toast.error("Failed to load orders");
       }
@@ -62,7 +68,7 @@ const AgentOrdersPage = () => {
         </h1>
 
         <Link
-          to="/connection-requests"
+          to="/agent/connection-requests"
           className="mt-4 inline-block text-blue-300 hover:text-white transition underline"
         >
           View Connection Requests

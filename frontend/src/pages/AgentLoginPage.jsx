@@ -1,15 +1,15 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import socket from "../socket.js"; 
 import { useNavigate } from "react-router";
 import { FaUserShield, FaSignInAlt } from "react-icons/fa";
+import { socket } from "../socket.js";
 
 const AgentLoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({
     agentEmail: "",
-    agentPassword: ""
+    agentPassword: "",
   });
 
   const navigate = useNavigate();
@@ -18,19 +18,29 @@ const AgentLoginPage = () => {
     const { name, value } = e.target;
     setLoginInfo((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/agentAuth/login", loginInfo);
+      const res = await axios.post(
+        "http://localhost:8000/agentAuth/login",
+        loginInfo
+      );
 
       if (res.status === 200) {
         localStorage.setItem("agentToken", res.data.token);
+        const token = localStorage.getItem("agentToken");
+        const agentId = JSON.parse(atob(token.split(".")[1])).agentId;
+
+        socket.emit("register", {
+          userId: agentId,
+          role: "agent",
+        });
         toast.success(res.data.message);
-        navigate("/agent-orders");
+        navigate("/agent/agent-orders");
       } else {
         toast.error(res.data.message);
       }
@@ -42,7 +52,6 @@ const AgentLoginPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 via-blue-900 to-black p-4">
-
       {/* HEADER */}
       <div className="text-center mb-10 animate-fadeIn">
         <FaUserShield className="text-blue-300 mx-auto text-7xl drop-shadow-lg" />
@@ -61,10 +70,11 @@ const AgentLoginPage = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-
           {/* Email */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Email</label>
+            <label className="block text-gray-700 font-medium mb-1">
+              Email
+            </label>
             <input
               type="email"
               name="agentEmail"
@@ -77,7 +87,9 @@ const AgentLoginPage = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Password</label>
+            <label className="block text-gray-700 font-medium mb-1">
+              Password
+            </label>
             <input
               type="password"
               name="agentPassword"

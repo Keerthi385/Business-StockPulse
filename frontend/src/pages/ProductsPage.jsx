@@ -133,33 +133,33 @@ const ProductsPage = () => {
 
         <div className="flex gap-3 flex-wrap justify-center">
           <Link
-            to="/create"
+            to="/vendor/create"
             className="bg-white/90 hover:bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow-md transition"
           >
             Create Product
           </Link>
 
           <Link
-            to="/vendor-orders"
+            to="/vendor/vendor-orders"
             className="bg-white/90 hover:bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow-md transition"
           >
             Orders
           </Link>
 
           <Link
-            to="/find-connections"
+            to="/vendor/find-connections"
             className="bg-white/90 hover:bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow-md transition"
           >
             Find Connections
           </Link>
           <Link
-            to="/chatbot"
+            to="/vendor/chatbot"
             className="bg-white/90 hover:bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow-md transition"
           >
             Chatbot
           </Link>
           <Link
-            to="/analysis"
+            to="/vendor/analysis"
             className="bg-white/90 hover:bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow-md transition"
           >
             Analysis
@@ -191,7 +191,7 @@ const ProductsPage = () => {
             {/* BUTTONS */}
             <div className="flex gap-2 mt-2">
               <Link
-                to={`/products/${product._id}`}
+                to={`/vendor/products/${product._id}`}
                 className="flex-1 bg-purple-200 hover:bg-purple-300 text-purple-900 font-semibold px-3 py-2 rounded-lg text-center transition"
               >
                 Edit
@@ -257,7 +257,7 @@ const ProductsPage = () => {
               <div className="mt-4 flex flex-col items-center gap-2 p-3 bg-purple-100 rounded-xl">
                 <div className="flex gap-3 items-center">
                   <Link
-                    to={`/orderForm/${product._id}/${product.productName}`}
+                    to={`/vendor/orderForm/${product._id}/${product.productName}`}
                     className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition"
                   >
                     Order

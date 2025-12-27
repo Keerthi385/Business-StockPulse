@@ -46,7 +46,7 @@ const HomePage = () => {
           </ul>
 
           <Link
-            to="/vendor"
+            to="/vendorPage"
             className="block w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl text-center font-semibold transition"
           >
             Login as Vendor →
@@ -72,7 +72,7 @@ const HomePage = () => {
           </ul>
 
           <Link
-            to="/agent"
+            to="/agentPage"
             className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-center font-semibold transition"
           >
             Login as Agent →

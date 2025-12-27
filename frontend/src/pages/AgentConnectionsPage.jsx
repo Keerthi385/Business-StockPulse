@@ -2,9 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaUserFriends } from "react-icons/fa";
+import { useAgent } from "../context/AgentContext";
 
 const AgentConnectionsPage = () => {
-  const [connections, setConnections] = useState([]);
+  const { connections, setConnections } = useAgent();
 
   useEffect(() => {
     const fetchConnections = async () => {
@@ -20,7 +21,13 @@ const AgentConnectionsPage = () => {
         );
 
         if (res.status === 200) {
-          setConnections(res.data);
+          //setConnections(res.data);
+          setConnections((prev) => {
+            const map = new Map(prev.map((c) => [c._id, c]));
+            res.data.forEach((c) => map.set(c._id, c));
+            return Array.from(map.values());
+          });
+
           toast.success("Connections loaded successfully!");
         } else {
           toast.error(res.data?.message || "Failed to fetch connections");
@@ -35,7 +42,6 @@ const AgentConnectionsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-blue-900 p-6">
-
       {/* Page Header */}
       <div className="text-center mb-10">
         <FaUserFriends className="text-blue-200 text-6xl mx-auto mb-4 drop-shadow-lg" />
@@ -71,9 +77,7 @@ const AgentConnectionsPage = () => {
 
             <hr className="my-4 border-gray-300" />
 
-            <p className="text-sm text-gray-500">
-              Connected Vendor #{idx + 1}
-            </p>
+            <p className="text-sm text-gray-500">Connected Vendor #{idx + 1}</p>
           </div>
         ))}
       </div>

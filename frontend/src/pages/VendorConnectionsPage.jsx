@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { TrashIcon } from "lucide-react";
 import { FaUsers } from "react-icons/fa";
+import { useVendor } from "../context/VendorContext";
 
 const VendorConnectionsPage = () => {
-  const [connections, setConnections] = useState([]);
+  const { connections, setConnections } = useVendor();
 
   useEffect(() => {
     const fetchConnections = async () => {

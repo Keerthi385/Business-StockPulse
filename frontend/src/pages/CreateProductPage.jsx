@@ -31,7 +31,7 @@ const CreateProductPage = () => {
         },
       });
       toast.success("Product Created!");
-      navigate("/products");
+      navigate("/vendor/products");
     } catch (error) {
       toast.error(error.response?.data?.message || "Server Issue");
     }

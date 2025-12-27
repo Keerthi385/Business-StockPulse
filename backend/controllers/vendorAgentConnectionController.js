@@ -1,20 +1,23 @@
 import Agent from "../models/Agent.js";
 import Vendor from "../models/Vendor.js";
 import Connection from "../models/Connection.js";
+import { io, onlineUsers } from "../server.js";
 
 export const createConnectionRequest = async (req, res) => {
   try {
     const vendorId = req.vendor.vendorId;
     const agentID = req.params.agentID;
-    const vendor = await Vendor.findById( vendorId );
+    const vendor = await Vendor.findById(vendorId);
     const agent = await Agent.findOne({ agentID });
+    const socketId = onlineUsers.get(`agent_${agent._id}`);
 
     const connectionExists = await Connection.findOne({
       agentID,
       vendorID: vendor.vendorID,
     });
 
-    if(connectionExists) return res.status(409).json({message: "Connection already exists!"});
+    if (connectionExists)
+      return res.status(409).json({ message: "Connection already exists!" });
 
     console.log(agent);
     const connection = new Connection({
@@ -29,6 +32,13 @@ export const createConnectionRequest = async (req, res) => {
 
     const newConnection = await connection.save();
 
+    if (socketId) {
+      io.to(socketId).emit("connectionRequest", {
+        message: "New connection request received",
+        data: newConnection,
+      });
+    }
+
     return res
       .status(201)
       .json({ message: "Connection created successfully!", newConnection });
@@ -42,14 +52,15 @@ export const acceptConnectionRequest = async (req, res) => {
   try {
     const agentId = req.agent.agentId;
     const connectionId = req.params.connectionId;
-
+    const connection = await Connection.findById(connectionId);
     const agent = await Agent.findById(agentId);
+    const vendor = await Vendor.findOne({vendorID: connection.vendorID});
+    const socketId = onlineUsers.get(`vendor_${vendor._id}`);
 
     if (!connectionId) {
       return res.status(400).json({ message: "connectionID is required" });
     }
 
-    const connection = await Connection.findById(connectionId);
     console.log(agent);
 
     if (!connection) {
@@ -65,6 +76,13 @@ export const acceptConnectionRequest = async (req, res) => {
     connection.connectionStatus = "accepted";
     const updatedConnection = await connection.save();
 
+    if (socketId) {
+      io.to(socketId).emit("connectionStatus", {
+        message: "Connection accepted",
+        data: updatedConnection,
+      });
+    }
+
     return res.status(200).json({
       message: "Connection request accepted successfully!",
       updatedConnection,
@@ -75,19 +93,17 @@ export const acceptConnectionRequest = async (req, res) => {
   }
 };
 
-export const rejectConnectionRequest = async(req,res) => {
+export const rejectConnectionRequest = async (req, res) => {
   try {
     const agentId = req.agent.agentId;
     const connectionId = req.params.connectionId;
 
     const agent = await Agent.findById(agentId);
+    const connection = await Connection.findById(connectionId);
 
     if (!connectionId) {
       return res.status(400).json({ message: "connectionID is required" });
     }
-
-    const connection = await Connection.findById(connectionId);
-    console.log(agent);
 
     if (!connection) {
       return res.status(404).json({ message: "Connection not found" });
@@ -103,7 +119,15 @@ export const rejectConnectionRequest = async(req,res) => {
 
     const updatedConnection = await connection.save();
 
-    //await Connection.findByIdAndDelete(connection._id);
+    const vendor = await Vendor.findOne({ vendorID: connection.vendorID });
+    const socketId = onlineUsers.get(`vendor_${vendor._id}`);
+
+    if (socketId) {
+      io.to(socketId).emit("connectionStatus", {
+        message: "Connection rejected",
+        data: updatedConnection,
+      });
+    }
 
     return res.status(200).json({
       message: "Connection request accepted successfully!",
@@ -127,10 +151,13 @@ export const viewConnectedAgents = async (req, res) => {
   }
 };
 
-export const viewConnectedVendors = async(req,res) => {
+export const viewConnectedVendors = async (req, res) => {
   try {
     const agent = await Agent.findById(req.agent.agentId);
-    const vendors = await Connection.find({ agentID: agent.agentID, connectionStatus: "accepted" });
+    const vendors = await Connection.find({
+      agentID: agent.agentID,
+      connectionStatus: "accepted",
+    });
 
     return res.status(200).json(vendors);
   } catch (error) {
@@ -139,37 +166,48 @@ export const viewConnectedVendors = async(req,res) => {
   }
 };
 
-export const findAgentByID = async(req,res) => {
+export const findAgentByID = async (req, res) => {
   try {
     const agentID = req.params.id;
-    const agent = await Agent.findOne({agentID});
-    if(!agent) return res.status(404).json({message: "No agent found with provided ID"});
+    const agent = await Agent.findOne({ agentID });
+    if (!agent)
+      return res
+        .status(404)
+        .json({ message: "No agent found with provided ID" });
     return res.status(200).json(agent);
   } catch (error) {
     console.log("Error in findAgentByID", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-export const viewConnectionRequests = async(req,res) => {
+export const viewConnectionRequests = async (req, res) => {
   try {
     const agent = await Agent.findById(req.agent.agentId);
-    const requests = await Connection.find({agentID: agent.agentID, connectionStatus: "pending"});
+    const requests = await Connection.find({
+      agentID: agent.agentID,
+      connectionStatus: "pending",
+    });
     return res.status(200).json(requests);
   } catch (error) {
     console.log("Error in viewConnectionRequests", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
-export const deleteConnection = async(req, res) => {
+export const deleteConnection = async (req, res) => {
   try {
-    const connection = await Connection.findByIdAndDelete(req.params.connectionId);
-    if(!connection) return res.status(404).json({message: "Connection does not exist!"});
+    const connection = await Connection.findByIdAndDelete(
+      req.params.connectionId
+    );
+    if (!connection)
+      return res.status(404).json({ message: "Connection does not exist!" });
 
-    return res.status(200).json({message: "Connection deleted successfully!"});
+    return res
+      .status(200)
+      .json({ message: "Connection deleted successfully!" });
   } catch (error) {
     console.log("Error in deleteConnection", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-}
+};

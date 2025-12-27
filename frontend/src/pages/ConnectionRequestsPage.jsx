@@ -2,9 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router";
+import { useAgent } from "../context/AgentContext";
 
 const ConnectionRequestsPage = () => {
-  const [connections, setConnections] = useState([]);
+  const {connections, setConnections} = useAgent();
 
   useEffect(() => {
     const fetchConnectionRequests = async () => {
@@ -29,7 +30,7 @@ const ConnectionRequestsPage = () => {
     };
 
     fetchConnectionRequests();
-  }, []);
+  }, [setConnections]);
 
   const handleAccept = async (orderId) => {
     try {
@@ -83,7 +84,7 @@ const ConnectionRequestsPage = () => {
         </h1>
 
         <Link
-          to="/myVendors"
+          to="/agent/myVendors"
           className="inline-block mt-3 text-white/90 hover:text-white underline"
         >
           View My Vendors →

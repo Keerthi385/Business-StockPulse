@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { FaSignInAlt, FaStore } from "react-icons/fa";
+import { socket } from "../socket.js";
 
 const VendorLoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({
@@ -34,8 +35,15 @@ const VendorLoginPage = () => {
 
       if (res.status === 200) {
         localStorage.setItem("vendorToken", res.data.token);
+        const token = localStorage.getItem("vendorToken");
+        const vendorId = JSON.parse(atob(token.split(".")[1])).vendorId;
+
+        socket.emit("register", {
+          userId: vendorId,
+          role: "vendor",
+        });
         toast.success(res.data.message);
-        navigate("/products");
+        navigate("/vendor/products");
       } else {
         toast.error(res.data.message);
       }
@@ -47,9 +55,10 @@ const VendorLoginPage = () => {
     }
   };
 
+  useEffect(() => {}, []);
+
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-purple-900 via-purple-700 to-purple-900 p-6">
-
       {/* Header */}
       <div className="text-center mt-3 mb-10">
         <FaStore className="text-white mx-auto text-6xl mb-3" />
@@ -66,7 +75,6 @@ const VendorLoginPage = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
           {/* Email */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
@@ -107,7 +115,13 @@ const VendorLoginPage = () => {
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
-            {loading ? "Logging in..." : <><FaSignInAlt /> Login</>}
+            {loading ? (
+              "Logging in..."
+            ) : (
+              <>
+                <FaSignInAlt /> Login
+              </>
+            )}
           </button>
         </form>
 

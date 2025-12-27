@@ -37,7 +37,7 @@ const UpdatePage = () => {
         }
       );
       toast.success(res.data.message);
-      navigate("/products");
+      navigate("/vendor/products");
     } catch (error) {
       toast.error(error.response?.data?.message || "Server Issue");
     }

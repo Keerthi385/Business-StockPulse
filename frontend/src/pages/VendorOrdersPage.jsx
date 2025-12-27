@@ -1,15 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import socket from "../socket.js";
+import { useVendor } from "../context/VendorContext";
 
 const VendorOrdersPage = () => {
-  const [orders, setOrders] = useState([]);
+  const { orders, setOrders } = useVendor();
 
   useEffect(() => {
     const token = localStorage.getItem("vendorToken");
     const vendorId = JSON.parse(atob(token.split(".")[1])).vendorId;
-    socket.emit("join_vendor", vendorId);
 
     const fetchOrders = async () => {
       try {
@@ -59,9 +58,7 @@ const VendorOrdersPage = () => {
       {/* Orders List */}
       <div className="max-w-4xl mx-auto space-y-6">
         {orders.length === 0 && (
-          <p className="text-center text-white text-lg">
-            No orders available.
-          </p>
+          <p className="text-center text-white text-lg">No orders available.</p>
         )}
 
         {orders.map((order) => (
@@ -96,8 +93,7 @@ const VendorOrdersPage = () => {
               </p>
 
               <p>
-                <span className="font-semibold">Agent ID:</span>{" "}
-                {order.agentID}
+                <span className="font-semibold">Agent ID:</span> {order.agentID}
               </p>
 
               <p>
@@ -107,14 +103,16 @@ const VendorOrdersPage = () => {
             </div>
 
             {/* Cancel Button */}
-            {order.status != "delivered" && <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => handleCancelOrder(order._id)}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2 rounded-lg transition"
-              >
-                Cancel Order
-              </button>
-            </div>}
+            {order.status != "delivered" && (
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={() => handleCancelOrder(order._id)}
+                  className="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2 rounded-lg transition"
+                >
+                  Cancel Order
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

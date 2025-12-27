@@ -61,7 +61,7 @@ const FindConnectionsPage = () => {
 
       {/* Header */}
       <Link
-        to="/vendor-connections"
+        to="/vendor/vendor-connections"
         className="mb-8 text-white underline text-lg flex items-center gap-2 hover:text-purple-200"
       >
         <FaUsers /> My Connections
